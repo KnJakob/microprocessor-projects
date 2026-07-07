@@ -1,7 +1,7 @@
 import serial, sys, time
 
 PORT = "/dev/tty.usbserial-1130" # mac
-# PORT = "/dev/USB0"               # linux
+# PORT = "/dev/ttyUSB0"               # linux
 BAUD_RATE = 115200
 TIMEOUT = 1
 
