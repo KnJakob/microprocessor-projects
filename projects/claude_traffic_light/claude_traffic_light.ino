@@ -23,6 +23,7 @@
 const int PIN_WAITING   = 3; // GREEN
 const int PIN_RUNNING   = 4; // RED
 const int PIN_ATTENTION = 5; // YELLOW
+const int PIN_PIEZO     = 7; // BUZZER
 
 const unsigned long BAUD_RATE = 115200;
 
@@ -39,14 +40,39 @@ void applyState(String state) {
   digitalWrite(PIN_ATTENTION, LOW);
 
   if (state == "running") {
+    tone(PIN_PIEZO, 500);
     digitalWrite(PIN_RUNNING, HIGH);
     currentState = "running";
+    delay(200);
+    noTone(PIN_PIEZO);
+    
   } else if (state == "attention") {
+    tone(PIN_PIEZO, 700);
     digitalWrite(PIN_ATTENTION, HIGH);
     currentState = "attention";
+    delay(200);
+    noTone(PIN_PIEZO);
+    
   } else if (state == "waiting") {
+    tone(PIN_PIEZO, 1100);
     digitalWrite(PIN_WAITING, HIGH);
     currentState = "waiting";
+    delay(500);
+    noTone(PIN_PIEZO);
+    
+  } else if (state == "power") {
+    digitalWrite(PIN_WAITING, HIGH);
+    currentState = "power";
+    
+  } else if (state == "exit") {
+    tone(PIN_PIEZO, 1200);
+    delay(200);
+    tone(PIN_PIEZO, 800);
+    delay(200);
+    tone(PIN_PIEZO, 400);
+    delay(200);
+    noTone(PIN_PIEZO);
+    currentState = "exit";
   } else {
     // Unknown word on the line - ignore it, don't change state.
     return;
@@ -58,7 +84,7 @@ void setup() {
   pinMode(PIN_WAITING, OUTPUT);
   pinMode(PIN_RUNNING, OUTPUT);
   pinMode(PIN_ATTENTION, OUTPUT);
-  applyState("waiting");
+  applyState("power");
 
   Serial.begin(BAUD_RATE);
   // Give the host a moment; not required but harmless.
@@ -88,7 +114,7 @@ void loop() {
   // Safety net: if stuck on "running" with no update for 10 minutes,
   // fall back to waiting so a dropped connection doesn't lie forever.
   if (currentState == "running" && millis() - lastSignalMillis > 10UL * 60UL * 1000UL) {
-    applyState("waiting");
+    applyState("power");
   }
 
 }
