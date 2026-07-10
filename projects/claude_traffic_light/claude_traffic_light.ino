@@ -66,13 +66,14 @@ void applyState(String state) {
     
   } else if (state == "exit") {
     tone(PIN_PIEZO, 1200);
-    delay(200);
+    delay(150);
     tone(PIN_PIEZO, 800);
-    delay(200);
+    delay(150);
     tone(PIN_PIEZO, 400);
-    delay(200);
+    delay(150);
     noTone(PIN_PIEZO);
     currentState = "exit";
+    
   } else {
     // Unknown word on the line - ignore it, don't change state.
     return;
