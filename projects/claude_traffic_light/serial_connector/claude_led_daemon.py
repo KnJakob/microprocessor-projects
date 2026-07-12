@@ -30,8 +30,12 @@ def main():
         if e.errno == 6:
             print("Device disconnected, shutdown..")
     finally:
-        if ser.is_open:
-            ser.close()
+        try:
+            if ser.is_open:
+                ser.close()
+        except OSError as e:
+            if e.errno == 6:
+                print("Device already disconnected")
         if os.path.exists(FIFO_PATH):
             os.remove(FIFO_PATH)
     
