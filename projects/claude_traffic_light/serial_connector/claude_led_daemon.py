@@ -20,10 +20,9 @@ def main():
                 for line in fifo:
                     line = line.strip()
                     if line:
-                        if line == "exit":
-                            ser.write("waiting\n".encode())
-                            sys.exit(0)
                         ser.write((line + '\n').encode())
+                        if line == "exit":
+                            sys.exit(0)
     except KeyboardInterrupt:
         ser.write("waiting\n".encode())
         print("Received shutdown..")
