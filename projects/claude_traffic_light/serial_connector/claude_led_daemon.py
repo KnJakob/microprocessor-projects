@@ -1,7 +1,7 @@
 import serial, time, os, sys
 
-# PORT = "/dev/tty.usbserial-1130" # mac
-PORT = "/dev/ttyUSB0"               # linux
+PORT = "/dev/tty.usbserial-1130" # mac
+# PORT = "/dev/ttyUSB0"               # linux
 BAUD_RATE = 115200
 TIMEOUT = 1
 
@@ -40,4 +40,8 @@ def main():
             os.remove(FIFO_PATH)
     
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except OSError as e:
+        if e.errno == 6:
+            print("Device disconnected")
