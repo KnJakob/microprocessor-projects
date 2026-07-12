@@ -26,6 +26,9 @@ def main():
     except KeyboardInterrupt:
         ser.write("waiting\n".encode())
         print("Received shutdown..")
+    except OSError as e:
+        if e.errno == 6:
+            print("Device disconnected, shutdown..")
     finally:
         if ser.is_open:
             ser.close()
