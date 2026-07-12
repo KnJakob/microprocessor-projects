@@ -40,19 +40,27 @@ void applyState(String state) {
   digitalWrite(PIN_ATTENTION, LOW);
 
   if (state == "running") {
-    tone(PIN_PIEZO, 500);
     digitalWrite(PIN_RUNNING, HIGH);
     currentState = "running";
+
+  } else if (state == "running_alert") {
+    tone(PIN_PIEZO, 500);
+    digitalWrite(PIN_RUNNING, HIGH);
+    currentState = "running_alert";
     delay(200);
     noTone(PIN_PIEZO);
-    
+
   } else if (state == "attention") {
-    tone(PIN_PIEZO, 700);
     digitalWrite(PIN_ATTENTION, HIGH);
     currentState = "attention";
+
+  } else if (state == "attention_alert") {
+    tone(PIN_PIEZO, 700);
+    digitalWrite(PIN_ATTENTION, HIGH);
+    currentState = "attention_alert";
     delay(200);
     noTone(PIN_PIEZO);
-    
+
   } else if (state == "waiting") {
     tone(PIN_PIEZO, 1100);
     digitalWrite(PIN_WAITING, HIGH);

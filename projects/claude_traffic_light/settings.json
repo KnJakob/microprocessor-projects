@@ -10,7 +10,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "echo 'attention' >> /tmp/claude_led_daemon"
+            "command": "echo 'attention_alert' >> /tmp/claude_led_daemon"
           }
         ]
       }
@@ -30,7 +30,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "echo 'running' >> /tmp/claude_led_daemon"
+            "command": "echo 'running_alert' >> /tmp/claude_led_daemon"
           }
         ]
       }
