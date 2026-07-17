@@ -1,0 +1,13 @@
+{
+  "model": "opus[1m]",
+  "theme": "dark-ansi",
+  "hooks": {
+    "TestHook": [
+      {
+        "type": "command",
+        "command": "echo 'test hook executed'",
+        "timeout": 5
+      }
+    ]
+  }
+}
