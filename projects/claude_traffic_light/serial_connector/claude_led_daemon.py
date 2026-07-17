@@ -1,6 +1,7 @@
 import serial, time, os, sys
 import select
 from collections import OrderedDict
+from claude_settings import check_hooks
 
 PORT = "/dev/tty.usbserial-1130" # mac
 # PORT = "/dev/ttyUSB0"               # linux
@@ -9,6 +10,9 @@ TIMEOUT = 1
 
 FIFO_PATH = "/tmp/claude_led_daemon"
 CACHE_TTL = 1.0  # Cache time-to-live in seconds
+
+# Global serial connection object
+ser = None
 
 class ToneCache:
     def __init__(self, ttl_seconds):
@@ -43,37 +47,64 @@ class ToneCache:
             del self.cache[oldest]
             del self.access_times[oldest]
 
+def connect_serial():
+    """Attempt to establish a single serial connection.
+    Returns True on success, False on failure."""
+    global ser
+    try:
+        if ser and ser.is_open:
+            ser.close()
+        ser = serial.Serial(PORT, BAUD_RATE, timeout=TIMEOUT)
+        time.sleep(1.5)  # Wait for Arduino to reset
+        print("Serial connection established")
+        return True
+    except Exception as e:
+        print(f"Failed to open serial port: {e}")
+        ser = None
+        return False
+
+def connect_with_retry(max_attempts=5):
+    """Attempt to connect with exponential backoff.
+    Wait times: 1, 2, 4, 8, 16 seconds for attempts 1..5.
+    Exits the program if max_attempts is reached."""
+    global ser
+    for attempt in range(max_attempts):
+        if connect_serial():
+            return True
+        # If this was the last attempt, don't sleep
+        if attempt == max_attempts - 1:
+            break
+        wait_time = 2 ** attempt  # 1, 2, 4, 8, ...
+        print(f"Connection attempt {attempt+1} failed. Retrying in {wait_time}s...")
+        time.sleep(wait_time)
+    print(f"Failed to establish serial connection after {max_attempts} attempts. Exiting.")
+    sys.exit(1)
+    return False  # Should not reach here
+
 def main():
+    print("=== Starting claude daemon ===")
+
     # Delete and recreate FIFO to ensure clean state
     if os.path.exists(FIFO_PATH):
         os.remove(FIFO_PATH)
     os.mkfifo(FIFO_PATH)
 
+    print("Comparing claude settings")
+    check_hooks.cmp_hooks()
+
     # Initialize tone cache
     tone_cache = ToneCache(CACHE_TTL)
 
     # Connection state tracking
+    global ser
     ser = None
     last_connection_check = 0
     connection_check_interval = 5.0  # Check connection every 5 seconds
 
-    def connect_serial():
-        nonlocal ser
-        try:
-            if ser and ser.is_open:
-                ser.close()
-            ser = serial.Serial(PORT, BAUD_RATE, timeout=TIMEOUT)
-            time.sleep(1.5)  # Wait for Arduino to reset
-            print("Serial connection established")
-            return True
-        except Exception as e:
-            print(f"Failed to open serial port: {e}")
-            ser = None
-            return False
-
-    # Initial connection
-    if not connect_serial():
-        print("Warning: Could not establish initial serial connection")
+    # Initial connection with retry
+    if not connect_with_retry():
+        # This point should not be reached due to exit in connect_with_retry
+        pass
 
     try:
         while True:
@@ -84,10 +115,11 @@ def main():
                 last_connection_check = current_time
                 if not ser or not ser.is_open:
                     print("Serial connection lost, attempting to reconnect...")
-                    if connect_serial():
+                    if connect_with_retry():
                         print("Reconnected successfully")
                     else:
-                        print("Reconnection failed, will retry later")
+                        # This point should not be reached due to exit in connect_with_retry
+                        pass
 
             # Only process FIFO if we have a serial connection
             if ser and ser.is_open:
@@ -95,7 +127,6 @@ def main():
                     # Non-blocking read from FIFO with timeout
                     with open(FIFO_PATH, 'r', encoding='utf-8') as fifo:
                         # Use select-like behavior with timeout
-                        import select
                         if hasattr(select, 'select'):  # Unix/Linux
                             ready, _, _ = select.select([fifo], [], [], 0.1)
                             if ready:
