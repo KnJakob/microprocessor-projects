@@ -98,7 +98,7 @@ void setup() {
   Serial.begin(BAUD_RATE);
   // Give the host a moment; not required but harmless.
   delay(200);
-  Serial.println("Claude status indicator ready. Send: running | waiting | attention");
+  Serial.println("Claude status indicator ready");
 
 }
 
