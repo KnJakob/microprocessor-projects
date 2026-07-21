@@ -2,12 +2,79 @@
   "model": "opus[1m]",
   "theme": "dark-ansi",
   "hooks": {
-    "TestHook": [
-      {
-        "type": "command",
-        "command": "echo 'test hook executed'",
-        "timeout": 5
-      }
+    "UserPromptSubmit": [
+      { "hooks": [
+          { "type": "command",
+            "command": "echo 'running' >> /tmp/claude_led_daemon" }
+        ] }
+    ],
+    "PreToolUse": [
+      { "matcher": "AskUserQuestion|ExitPlanMode",
+        "hooks": [
+          { "type": "command",
+            "command": "echo 'attention_alert' >> /tmp/claude_led_daemon" }
+        ] }
+    ],
+    "PermissionRequest": [
+      { "hooks": [
+          { "type": "command",
+            "command": "echo 'attention_alert' >> /tmp/claude_led_daemon" }
+        ] }
+    ],
+    "Notification": [
+      { "hooks": [
+          { "type": "command",
+            "command": "echo 'attention_alert' >> /tmp/claude_led_daemon" }
+        ] }
+    ],
+    "Elicitation": [
+      { "hooks": [
+          { "type": "command",
+            "command": "echo 'attention_alert' >> /tmp/claude_led_daemon" }
+        ] }
+    ],
+    "PostToolUse": [
+      { "matcher": "AskUserQuestion|ExitPlanMode",
+        "hooks": [
+          { "type": "command",
+            "command": "echo 'running' >> /tmp/claude_led_daemon" }
+        ] }
+    ],
+	"PostToolUseFailure": [
+      { "hooks": [
+          { "type": "command",
+			"command": "echo 'running' >> /tmp/claude_led_daemon" }
+        ] }
+    ],
+	"ElicitationResult": [
+      { "hooks": [
+          { "type": "command",
+			"command": "echo 'running' >> /tmp/claude_led_daemon" }
+        ] }
+    ],
+	"PermissionDenied": [
+	  { "hooks": [
+		  { "type": "command",
+		    "command": "echo 'waiting' >> /tmp/claude_led_daemon" }
+		] }
+	],
+    "Stop": [
+      { "hooks": [
+          { "type": "command",
+            "command": "echo 'waiting' >> /tmp/claude_led_daemon" }
+        ] }
+    ],
+    "StopFailure": [
+      { "hooks": [
+          { "type": "command",
+            "command": "echo 'waiting' >> /tmp/claude_led_daemon" }
+        ] }
+    ],
+    "SessionEnd": [
+      { "hooks": [
+          { "type": "command",
+            "command": "echo 'exit' >> /tmp/claude_led_daemon" }
+        ] }
     ]
   }
 }
