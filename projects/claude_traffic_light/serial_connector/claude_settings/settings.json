@@ -22,7 +22,8 @@
         ] }
     ],
     "Notification": [
-      { "hooks": [
+      { "matcher": "agent_needs_input",
+		"hooks": [
           { "type": "command",
             "command": "echo 'attention_alert' >> /tmp/claude_led_daemon" }
         ] }
@@ -34,8 +35,7 @@
         ] }
     ],
     "PostToolUse": [
-      { "matcher": "AskUserQuestion|ExitPlanMode",
-        "hooks": [
+      { "hooks": [
           { "type": "command",
             "command": "echo 'running' >> /tmp/claude_led_daemon" }
         ] }
@@ -50,6 +50,13 @@
       { "hooks": [
           { "type": "command",
 			"command": "echo 'running' >> /tmp/claude_led_daemon" }
+        ] }
+    ],
+    "Notification": [
+      { "matcher": "agent_completed",
+		"hooks": [
+          { "type": "command",
+            "command": "echo 'running' >> /tmp/claude_led_daemon" }
         ] }
     ],
 	"PermissionDenied": [
@@ -74,6 +81,12 @@
       { "hooks": [
           { "type": "command",
             "command": "echo 'exit' >> /tmp/claude_led_daemon" }
+        ] }
+    ],
+    "SessionStart": [
+      { "hooks": [
+          { "type": "command",
+            "command": "echo 'waiting' >> /tmp/claude_led_daemon" }
         ] }
     ]
   }
