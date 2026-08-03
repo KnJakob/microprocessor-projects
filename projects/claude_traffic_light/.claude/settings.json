@@ -53,6 +53,16 @@
           }
         ]
       }
+    ],
+    "StopFailure": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'waiting' >> /tmp/claude_led_daemon"
+          }
+        ]
+      }
     ]
   }
 }
