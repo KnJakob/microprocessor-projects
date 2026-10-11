@@ -2,8 +2,16 @@ import serial, time, os, sys
 import select
 from claude_settings import check_hooks
 
-PORT = "/dev/tty.usbserial-1130" # mac
-# PORT = "/dev/ttyUSB0"               # linux
+# when command is blocked it stays in orange
+# notification when asking for permissions take some time (around 3-5s)
+# for some reason it turned green when command could not be executed (it was not installed)
+# does not turn back red after permission grant for editing
+# every tool request is being sent twice
+# post tool use only working when granting for the rest of the session
+
+
+# PORT = "/dev/tty.usbserial-1130" # mac
+PORT = "/dev/ttyUSB0"               # linux
 BAUD_RATE = 115200
 TIMEOUT = 1
 
